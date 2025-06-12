@@ -34,4 +34,11 @@
             <SubType>Form</SubType>
         </Compile>
     </ItemGroup>
+
+    <ItemGroup>
+        <Content Include="Resources/audioswitch.ico">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </Content>
+    </ItemGroup>
+
 </Project>
