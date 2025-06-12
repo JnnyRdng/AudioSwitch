@@ -9,10 +9,10 @@ public static class HotKeys
     private const string Dll = "user32.dll";
 
     [DllImport(Dll)]
-    public static extern bool RegisterHotKey(IntPtr hWnd, int id, uint fsModifiers, uint vk);
+    private static extern bool RegisterHotKey(IntPtr hWnd, int id, uint fsModifiers, uint vk);
 
     [DllImport(Dll)]
-    public static extern bool UnregisterHotKey(IntPtr hWnd, int id);
+    private static extern bool UnregisterHotKey(IntPtr hWnd, int id);
 
     public static uint Modifiers(params ModifierKeys[] keys)
     {
