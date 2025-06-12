@@ -50,11 +50,9 @@ public static class SettingsService
         var v = Assembly.GetExecutingAssembly()
             .GetCustomAttribute<AssemblyInformationalVersionAttribute>()
             ?.InformationalVersion;
-        var suffix =
+        var suffix = string.Empty;
 #if DEBUG
-            "-dev";
-#else
-            string.Empty;
+        suffix = "-dev";
 #endif
         return (v ?? "Unknown").Split('+')[0] + suffix;
     }
