@@ -6,6 +6,32 @@
         <Nullable>enable</Nullable>
         <UseWindowsForms>true</UseWindowsForms>
         <ImplicitUsings>enable</ImplicitUsings>
+
+        <!-- publishing options -->
+        <RuntimeIdentifier>win-x64</RuntimeIdentifier>
+        <SelfContained>false</SelfContained>
+        <PublishSingleFile>true</PublishSingleFile>
+        <IncludeNativeLibrariesForSelfExtract>false</IncludeNativeLibrariesForSelfExtract>
+        <EnableCompressionInSingleFile>true</EnableCompressionInSingleFile>
+        <DebugType>none</DebugType>
+        <DebugSymbols>false</DebugSymbols>
+
+        <!-- versioning -->
+        <AssemblyVersion>1.0.0.0</AssemblyVersion>
+        <FileVersion>1.0.0.0</FileVersion>
+        <InformationalVersion>1.0.0</InformationalVersion>
     </PropertyGroup>
 
+    <ItemGroup>
+        <PackageReference Include="AudioSwitcher.AudioApi.CoreAudio" Version="3.0.3"/>
+    </ItemGroup>
+
+    <ItemGroup>
+        <Compile Update="Forms\HiddenForm.cs">
+            <SubType>Form</SubType>
+        </Compile>
+        <Compile Update="Forms\ToastForm.cs">
+            <SubType>Form</SubType>
+        </Compile>
+    </ItemGroup>
 </Project>
