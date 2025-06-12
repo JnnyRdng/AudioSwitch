@@ -5,12 +5,12 @@ namespace AudioSwitch.Utils;
 
 public static class HotKeys
 {
-    private const string dll = "user32.dll";
+    private const string Dll = "user32.dll";
 
-    [DllImport(dll)]
+    [DllImport(Dll)]
     public static extern bool RegisterHotKey(IntPtr hWnd, int id, uint fsModifiers, uint vk);
 
-    [DllImport(dll)]
+    [DllImport(Dll)]
     public static extern bool UnregisterHotKey(IntPtr hWnd, int id);
 
     public static uint Modifiers(params ModifierKeys[] keys)
