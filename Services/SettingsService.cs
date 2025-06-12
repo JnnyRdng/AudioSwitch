@@ -50,6 +50,12 @@ public static class SettingsService
         var v = Assembly.GetExecutingAssembly()
             .GetCustomAttribute<AssemblyInformationalVersionAttribute>()
             ?.InformationalVersion;
-        return v ?? "Unknown";
+        var suffix =
+#if DEBUG
+            "-dev";
+#else
+            string.Empty;
+#endif
+        return (v ?? "Unknown").Split('+')[0] + suffix;
     }
 }
