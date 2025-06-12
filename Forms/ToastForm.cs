@@ -1,4 +1,5 @@
 ﻿using System.Runtime.InteropServices;
+using AudioSwitch.Services;
 using Timer = System.Windows.Forms.Timer;
 
 namespace AudioSwitch.Forms;
@@ -10,10 +11,11 @@ public partial class ToastForm : Form
 
     public ToastForm(string message)
     {
+        var isDarkMode = SettingsService.Settings.DarkMode;
         FormBorderStyle = FormBorderStyle.None;
         StartPosition = FormStartPosition.Manual;
         Size = new Size(350, 100);
-        BackColor = Color.Black;
+        BackColor = isDarkMode ? Color.Black : Color.White;
         Opacity = 0;
         TopMost = true;
         ShowInTaskbar = false;
@@ -21,7 +23,7 @@ public partial class ToastForm : Form
         var label = new Label
         {
             Text = message,
-            ForeColor = Color.White,
+            ForeColor = isDarkMode ? Color.White : Color.Black,
             Dock = DockStyle.Fill,
             TextAlign = ContentAlignment.MiddleCenter,
             Font = new Font("Segoe UI", 12),

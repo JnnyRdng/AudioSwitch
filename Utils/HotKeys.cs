@@ -1,4 +1,5 @@
 ﻿using System.Runtime.InteropServices;
+using AudioSwitch.Context;
 using AudioSwitch.Enum;
 
 namespace AudioSwitch.Utils;
@@ -18,21 +19,21 @@ public static class HotKeys
         return keys.Aggregate(0u, (acc, key) => acc | (uint)key);
     }
 
-    public static void RegisterMultipleHotKeys(IntPtr hWnd, params (int id, uint modifiers, Keys key)[] keys)
+    public static void RegisterMultipleHotKeys(IntPtr hWnd, List<DeviceHotKey> hotkeys)
     {
-        foreach (var (id, modifiers, key) in keys)
+        foreach (var hotkey in hotkeys)
         {
-            var success = RegisterHotKey(hWnd, id, modifiers, (uint)key);
+            var success = RegisterHotKey(hWnd, hotkey.Id, hotkey.Modifiers, (uint)hotkey.Key);
             if (success) continue;
-            throw new ArgumentException($"Failed to register hotkey {key} {modifiers}");
+            throw new ArgumentException($"Failed to register hotkey {hotkey.Key} {hotkey.Modifiers} {hotkey.Id}");
         }
     }
 
-    public static void UnregisterMultipleHotKeys(IntPtr hWnd, params int[] ids)
+    public static void UnregisterMultipleHotKeys(IntPtr hWnd, List<DeviceHotKey> hotkeys)
     {
-        foreach (var id in ids)
+        foreach (var hotkey in hotkeys)
         {
-            UnregisterHotKey(hWnd, id);
+            UnregisterHotKey(hWnd, hotkey.Id);
         }
     }
 }

@@ -1,6 +1,7 @@
 ﻿using System.Reflection;
 using System.Text.Json;
 using AudioSwitch.Context;
+using Newtonsoft.Json;
 
 namespace AudioSwitch.Services;
 
@@ -20,7 +21,7 @@ public static class SettingsService
             try
             {
                 var json = File.ReadAllText(ConfigPath);
-                var settings = JsonSerializer.Deserialize<AppSettings>(json);
+                var settings = JsonConvert.DeserializeObject<AppSettings>(json);
                 if (settings != null)
                 {
                     Settings = settings;
@@ -40,8 +41,7 @@ public static class SettingsService
     public static void Save()
     {
         Directory.CreateDirectory(ConfigDir);
-        Console.WriteLine(ConfigPath);
-        var json = JsonSerializer.Serialize(Settings, new JsonSerializerOptions { WriteIndented = true });
+        var json = JsonConvert.SerializeObject(Settings, Formatting.Indented);
         File.WriteAllText(ConfigPath, json);
     }
 
