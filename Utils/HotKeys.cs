@@ -15,7 +15,7 @@ public static class HotKeys
 
     public static uint Modifiers(params ModifierKeys[] keys)
     {
-        return (uint)keys.Aggregate(ModifierKeys.None, (acc, key) => acc | key);
+        return keys.Aggregate(0u, (acc, key) => acc | (uint)key);
     }
 
     public static void RegisterMultipleHotKeys(IntPtr hWnd, params (int id, uint modifiers, Keys key)[] keys)
