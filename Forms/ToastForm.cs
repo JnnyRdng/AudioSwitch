@@ -34,6 +34,16 @@ public partial class ToastForm : Form
         SetRoundedRegion();
     }
     
+    protected override CreateParams CreateParams
+    {
+        get
+        {
+            var handleParam = base.CreateParams;
+            handleParam.ExStyle |= 0x02000000;   // WS_EX_COMPOSITED       
+            return handleParam;
+        }
+    }
+    
     public sealed override Color BackColor
     {
         get => base.BackColor;
