@@ -1,7 +1,7 @@
-﻿using AudioSwitch.Enum;
-using AudioSwitch.Forms;
+﻿using AudioSwitch.Forms;
 using AudioSwitch.Services;
 using AudioSwitch.Utils;
+using AudioSwitcher.AudioApi;
 using AudioSwitcher.AudioApi.CoreAudio;
 
 namespace AudioSwitch.Context;
@@ -68,7 +68,7 @@ public class TrayAppContext : ApplicationContext
 
     private async Task SwitchTo(string name)
     {
-        var devices = await _audioController.GetPlaybackDevicesAsync();
+        var devices = await _audioController.GetPlaybackDevicesAsync(DeviceState.Active);
         var device = devices.FirstOrDefault(d => d.FullName.StartsWith(name));
         if (device == null) return;
 
