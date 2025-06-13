@@ -1,4 +1,5 @@
 ﻿using System.Runtime.InteropServices;
+using AudioSwitch.Context;
 using AudioSwitch.Services;
 using Timer = System.Windows.Forms.Timer;
 
@@ -58,11 +59,11 @@ public partial class ToastForm : Form
 
     public async Task ShowToast()
     {
-        var screen = Screen.PrimaryScreen?.WorkingArea;
-        if (screen == null) return;
-        var w = screen.Value.Width;
-        var h = screen.Value.Height;
-        Location = new Point((w / 2) - (Width / 2), h - Height - 40);
+        var screen = Screen.FromPoint(Cursor.Position).WorkingArea;
+        var x = screen.Left + (screen.Width - Width) / 2;
+        var y = screen.Bottom - Height - 40;
+
+        Location = new Point(x, y);
         Show();
 
         FadeIn();
