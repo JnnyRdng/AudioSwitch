@@ -7,12 +7,12 @@ namespace AudioSwitch.Forms;
 
 public partial class ToastForm : Form
 {
-    private const double MaxOpacity = 0.75;
-    private const int ShowDuration = 1000;
+    private AppSettings Settings { get; }
 
     public ToastForm(string message)
     {
-        var isDarkMode = SettingsService.Settings.DarkMode;
+        Settings = SettingsService.Settings;
+        var isDarkMode = Settings.DarkMode;
         FormBorderStyle = FormBorderStyle.None;
         StartPosition = FormStartPosition.Manual;
         Size = new Size(350, 100);
@@ -67,16 +67,21 @@ public partial class ToastForm : Form
         Show();
 
         FadeIn();
-        await Task.Delay(ShowDuration);
+        await Task.Delay(Settings.ToastDuration);
         FadeOut();
     }
 
     private void FadeIn()
     {
+        if (Settings.DisableFade)
+        {
+            Opacity = Settings.ToastOpacity;
+            return;
+        }
         var timer = new Timer { Interval = 17 };
         timer.Tick += (s, e) =>
         {
-            if (Opacity < MaxOpacity)
+            if (Opacity < Settings.ToastOpacity)
             {
                 Opacity += 0.2;
             }
@@ -90,6 +95,11 @@ public partial class ToastForm : Form
 
     private void FadeOut()
     {
+        if (Settings.DisableFade)
+        {
+            Opacity = 0;
+            return;
+        }
         var outTimer = new Timer { Interval = 17 };
         outTimer.Tick += (s, e) =>
         {
