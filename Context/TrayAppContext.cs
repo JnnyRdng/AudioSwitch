@@ -39,7 +39,7 @@ public class TrayAppContext : ApplicationContext
         return new ToolStripMenuItem("Dark Mode", null, (s, e) =>
         {
             if (s is not ToolStripMenuItem menu) return;
-            SettingsService.Settings.ToggleDarkMode();
+            SettingsService.Settings.DarkMode = !SettingsService.Settings.DarkMode;
             menu.Checked = SettingsService.Settings.DarkMode;
         })
         {

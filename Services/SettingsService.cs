@@ -1,7 +1,5 @@
 ﻿using System.Reflection;
-using System.Text.Json;
 using AudioSwitch.Context;
-using Newtonsoft.Json;
 
 namespace AudioSwitch.Services;
 
@@ -21,12 +19,8 @@ public static class SettingsService
             try
             {
                 var json = File.ReadAllText(ConfigPath);
-                var settings = JsonConvert.DeserializeObject<AppSettings>(json);
-                if (settings != null)
-                {
-                    Settings = settings;
-                    return;
-                }
+                Settings = AppSettings.Deserialize(json);;
+                return;
             }
             catch (Exception e)
             {
@@ -41,8 +35,7 @@ public static class SettingsService
     public static void Save()
     {
         Directory.CreateDirectory(ConfigDir);
-        var json = JsonConvert.SerializeObject(Settings, Formatting.Indented);
-        File.WriteAllText(ConfigPath, json);
+        File.WriteAllText(ConfigPath, Settings.Serialize());
     }
 
     public static string GetVersion()
