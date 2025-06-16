@@ -1,7 +1,7 @@
 ﻿using AudioSwitch.Services;
 using Newtonsoft.Json;
 
-namespace AudioSwitch.Context;
+namespace AudioSwitch.App;
 
 public class AppSettings
 {
