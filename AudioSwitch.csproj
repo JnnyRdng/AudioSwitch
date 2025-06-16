@@ -7,6 +7,9 @@
         <UseWindowsForms>true</UseWindowsForms>
         <ImplicitUsings>enable</ImplicitUsings>
 
+        <!-- app icon -->
+        <ApplicationIcon>Resources/audioswitch.ico</ApplicationIcon>
+
         <!-- publishing options -->
         <RuntimeIdentifier>win-x64</RuntimeIdentifier>
         <SelfContained>false</SelfContained>
@@ -17,13 +20,13 @@
         <DebugSymbols>false</DebugSymbols>
 
         <!-- versioning -->
-        <AssemblyVersion>1.1.0.0</AssemblyVersion>
-        <FileVersion>1.1.0.0</FileVersion>
-        <InformationalVersion>1.1.0</InformationalVersion>
+        <AssemblyVersion>1.2.0.0</AssemblyVersion>
+        <FileVersion>1.2.0.0</FileVersion>
+        <InformationalVersion>1.2.0</InformationalVersion>
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="AudioSwitcher.AudioApi.CoreAudio" Version="3.0.3"/>
+        <PackageReference Include="AudioSwitcher.AudioApi.CoreAudio" Version="3.0.3" />
         <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
     </ItemGroup>
 
