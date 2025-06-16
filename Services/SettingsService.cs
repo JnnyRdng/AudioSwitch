@@ -1,5 +1,5 @@
 ﻿using System.Reflection;
-using AudioSwitch.Context;
+using AudioSwitch.App;
 
 namespace AudioSwitch.Services;
 
@@ -19,7 +19,7 @@ public static class SettingsService
             try
             {
                 var json = File.ReadAllText(ConfigPath);
-                Settings = AppSettings.Deserialize(json);;
+                Settings = AppSettings.Deserialize(json);
                 return;
             }
             catch (Exception e)
