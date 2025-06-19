@@ -13,7 +13,7 @@ public partial class ToastForm : Form
     public ToastForm(string message)
     {
         Settings = SettingsService.Settings;
-        var isDarkMode = ThemeUtils.IsDark(Settings.DarkMode);
+        var isDarkMode = ThemeUtils.IsDark(Settings.AppTheme);
         FormBorderStyle = FormBorderStyle.None;
         StartPosition = FormStartPosition.Manual;
         Size = new Size(350, 100);

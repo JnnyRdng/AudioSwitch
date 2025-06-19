@@ -8,16 +8,16 @@ public class AppSettings
 {
     #region Fields
 
-    private Theme _darkMode = Theme.System;
+    private Theme _appTheme = Theme.System;
     private List<DeviceHotKey> _deviceHotKeys = new();
     private float _toastOpacity = 0.8f;
     private int _toastDuration = 1_000;
     private bool _disableFade = false;
 
-    public Theme DarkMode
+    public Theme AppTheme
     {
-        get => _darkMode;
-        set => Set(ref _darkMode, value);
+        get => _appTheme;
+        set => Set(ref _appTheme, value);
     }
 
     public List<DeviceHotKey> DeviceHotKeys
