@@ -1,4 +1,5 @@
-﻿using AudioSwitch.Services;
+﻿using AudioSwitch.Enum;
+using AudioSwitch.Services;
 using Newtonsoft.Json;
 
 namespace AudioSwitch.App;
@@ -7,16 +8,16 @@ public class AppSettings
 {
     #region Fields
 
-    private bool _darkMode = true;
+    private Theme _appTheme = Theme.System;
     private List<DeviceHotKey> _deviceHotKeys = new();
     private float _toastOpacity = 0.8f;
     private int _toastDuration = 1_000;
     private bool _disableFade = false;
 
-    public bool DarkMode
+    public Theme AppTheme
     {
-        get => _darkMode;
-        set => Set(ref _darkMode, value);
+        get => _appTheme;
+        set => Set(ref _appTheme, value);
     }
 
     public List<DeviceHotKey> DeviceHotKeys

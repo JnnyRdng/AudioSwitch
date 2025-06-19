@@ -1,6 +1,7 @@
 ﻿using System.Runtime.InteropServices;
 using AudioSwitch.App;
 using AudioSwitch.Services;
+using AudioSwitch.Utils;
 using Timer = System.Windows.Forms.Timer;
 
 namespace AudioSwitch.Forms;
@@ -12,7 +13,7 @@ public partial class ToastForm : Form
     public ToastForm(string message)
     {
         Settings = SettingsService.Settings;
-        var isDarkMode = Settings.DarkMode;
+        var isDarkMode = ThemeUtils.IsDark(Settings.AppTheme);
         FormBorderStyle = FormBorderStyle.None;
         StartPosition = FormStartPosition.Manual;
         Size = new Size(350, 100);

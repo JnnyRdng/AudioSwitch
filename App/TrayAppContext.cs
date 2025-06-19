@@ -1,4 +1,5 @@
 ﻿using AudioSwitch.Components;
+using AudioSwitch.Enum;
 using AudioSwitch.Forms;
 using AudioSwitch.Services;
 using AudioSwitch.Utils;
@@ -46,7 +47,7 @@ public class TrayAppContext : ApplicationContext
         
         _trayIcon.ContextMenuStrip.Items.AddRange(_deviceButtons.ToArray());
         _trayIcon.ContextMenuStrip.Items.Add(new ToolStripSeparator());
-        _trayIcon.ContextMenuStrip.Items.Add(GetDarkModeToggle());
+        _trayIcon.ContextMenuStrip.Items.Add(GetThemeDropdown());
         _trayIcon.ContextMenuStrip.Items.Add(GetExitButton(dummyForm.Handle));
         _trayIcon.ContextMenuStrip.Items.Add(new ToolStripSeparator());
         _trayIcon.ContextMenuStrip.Items.Add(GetVersionItem());
@@ -60,18 +61,47 @@ public class TrayAppContext : ApplicationContext
         });
     }
 
-    private static ToolStripMenuItem GetDarkModeToggle()
+    private ToolStripMenuItem GetThemeDropdown()
     {
-        return new ToolStripMenuItem("Dark Mode", null, (s, e) =>
+        var menu = new ToolStripMenuItem("Theme");
+
+        var darkOption = new ToolStripMenuItem("Dark") { Tag = Theme.Dark };
+        var lightOption = new ToolStripMenuItem("Light") { Tag = Theme.Light };
+        var systemOption = new ToolStripMenuItem("System") { Tag = Theme.System };
+        
+        darkOption.Click += SettingItemClick;
+        lightOption.Click += SettingItemClick;
+        systemOption.Click += SettingItemClick;
+        
+        menu.DropDownItems.Add(darkOption);
+        menu.DropDownItems.Add(lightOption);
+        menu.DropDownItems.Add(systemOption);
+
+        if (_trayIcon.ContextMenuStrip != null)
         {
-            if (s is not ToolStripMenuItem menu) return;
-            SettingsService.Settings.DarkMode = !SettingsService.Settings.DarkMode;
-            menu.Checked = SettingsService.Settings.DarkMode;
-        })
+            _trayIcon.ContextMenuStrip.Opening += ContextMenuStripOpening;
+        }
+
+        return menu;
+
+        void UpdateCheckedState()
         {
-            CheckOnClick = false,
-            Checked = SettingsService.Settings.DarkMode
-        };
+            darkOption.Checked = SettingsService.Settings.AppTheme == (Theme)darkOption.Tag;
+            lightOption.Checked = SettingsService.Settings.AppTheme == (Theme)lightOption.Tag;
+            systemOption.Checked = SettingsService.Settings.AppTheme == (Theme)systemOption.Tag;
+        }
+
+        void ContextMenuStripOpening(object? sender, EventArgs e)
+        {
+            UpdateCheckedState();
+        }
+
+        void SettingItemClick(object? sender, EventArgs e)
+        {
+            if (sender is not ToolStripMenuItem { Tag: Theme theme }) return;
+            SettingsService.Settings.AppTheme = theme;
+            UpdateCheckedState();
+        }
     }
 
     private ToolStripMenuItem GetExitButton(IntPtr handle)
