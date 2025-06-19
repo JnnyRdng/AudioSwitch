@@ -8,7 +8,7 @@ public static class SettingsService
     public static AppSettings Settings { get; private set; } = null!;
 
     private static readonly string ConfigDir =
-        Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), Constants.AppName);
+        Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), Constants.AppIdentifier);
 
     private static readonly string ConfigPath = Path.Combine(ConfigDir, "settings.json");
 

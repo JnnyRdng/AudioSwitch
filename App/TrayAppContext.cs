@@ -1,5 +1,4 @@
-﻿using AudioSwitch.Enum;
-using AudioSwitch.Extensions;
+﻿using AudioSwitch.Components;
 using AudioSwitch.Forms;
 using AudioSwitch.Services;
 using AudioSwitch.Utils;
@@ -12,19 +11,19 @@ public class TrayAppContext : ApplicationContext
 {
     private readonly NotifyIcon _trayIcon;
     private readonly CoreAudioController _audioController = new();
+    private readonly List<ToolStripItem> _deviceButtons = new();
 
     public TrayAppContext()
     {
         var dummyForm = new HiddenForm();
-        HotKeys.RegisterMultipleHotKeys(dummyForm.Handle, SettingsService.Settings.DeviceHotKeys);
-
+        HotKeys.RegisterHotKeys(dummyForm.Handle, SettingsService.Settings.DeviceHotKeys);
         dummyForm.HotKeyPressed += OnHotKeyPressed;
 
         _trayIcon = new NotifyIcon
         {
             Icon = new Icon("Resources/audioswitch.ico"),
             Visible = true,
-            Text = $"AudioSwitch",
+            Text = Constants.AppName,
             ContextMenuStrip = new ContextMenuStrip
             {
                 BackColor = Color.White,
@@ -35,52 +34,30 @@ public class TrayAppContext : ApplicationContext
 
         foreach (var device in SettingsService.Settings.DeviceHotKeys)
         {
-            _trayIcon.ContextMenuStrip.Items.Add(CreateDescriptivePanelFromDevice(device));
-            _trayIcon.ContextMenuStrip.Items.Add(new ToolStripSeparator());
+            // device.ChangeShortcut(dummyForm.Handle,
+            //     Keys.Control | Keys.Shift | Keys.Alt | (device.DeviceName.StartsWith("Speak")
+            //         ? Keys.OemCloseBrackets
+            //         : Keys.OemOpenBrackets));
+            
+            _deviceButtons.Add(GetDeviceButton(device));
         }
 
+        _ = CheckDeviceMenuItems();
+        
+        _trayIcon.ContextMenuStrip.Items.AddRange(_deviceButtons.ToArray());
+        _trayIcon.ContextMenuStrip.Items.Add(new ToolStripSeparator());
         _trayIcon.ContextMenuStrip.Items.Add(GetDarkModeToggle());
         _trayIcon.ContextMenuStrip.Items.Add(GetExitButton(dummyForm.Handle));
         _trayIcon.ContextMenuStrip.Items.Add(new ToolStripSeparator());
         _trayIcon.ContextMenuStrip.Items.Add(GetVersionItem());
     }
 
-    private static ToolStripItem CreateDescriptivePanelFromDevice(DeviceHotKey device)
+    private ToolStripMenuItem GetDeviceButton(DeviceHotKey device)
     {
-        var panel = new Panel
+        return new DeviceMenuItem(device, (s, e) =>
         {
-            BackColor = Color.Transparent,
-            Padding = new Padding(4),
-            AutoSize = true,
-        };
-
-        var titleLabel = new Label
-        {
-            Text = device.DeviceName,
-            AutoSize = true,
-        };
-        var modString = ((ModifierKeys)device.Modifiers).ToModifierString();
-        var moddedString = modString.Length == 0 ? string.Empty : $"{modString}+";
-        var key = device.Key.ToSymbol();
-        var descLabel = new Label
-        {
-            Text = $"{moddedString}{key}",
-            Font = new Font("Segoe UI", 8),
-            ForeColor = SystemColors.GrayText,
-            AutoSize = true
-        };
-
-        panel.Controls.Add(titleLabel);
-        panel.Controls.Add(descLabel);
-        descLabel.Top = titleLabel.Bottom + 2;
-
-        return new ToolStripControlHost(panel)
-        {
-            Margin = Padding.Empty,
-            Padding = Padding.Empty,
-            AutoSize = true,
-            Size = panel.PreferredSize,
-        };
+            _ = SwitchTo(device.DeviceName);
+        });
     }
 
     private static ToolStripMenuItem GetDarkModeToggle()
@@ -101,7 +78,7 @@ public class TrayAppContext : ApplicationContext
     {
         return new ToolStripMenuItem("Exit", null, (s, e) =>
         {
-            HotKeys.UnregisterMultipleHotKeys(handle, SettingsService.Settings.DeviceHotKeys);
+            HotKeys.UnregisterHotKeys(handle, SettingsService.Settings.DeviceHotKeys);
             _trayIcon.Visible = false;
             _trayIcon.Dispose();
             Application.Exit();
@@ -142,10 +119,24 @@ public class TrayAppContext : ApplicationContext
     private async Task SwitchTo(string name)
     {
         var devices = await _audioController.GetPlaybackDevicesAsync(DeviceState.Active);
-        var device = devices.FirstOrDefault(d => d.FullName.StartsWith(name));
+        var device = devices?.FirstOrDefault(d => d.FullName.StartsWith(name));
         if (device == null) return;
 
-        await device.SetAsDefaultAsync();
+        var success = await device.SetAsDefaultAsync();
+        if (!success) return;
+
+        await CheckDeviceMenuItems();
         await new ToastForm($"Switched to {device.FullName}").ShowToast();
+    }
+
+    private async Task CheckDeviceMenuItems()
+    {
+        var devices = await _audioController.GetPlaybackDevicesAsync(DeviceState.Active);
+        _deviceButtons.ForEach(device =>
+        {
+            var match = devices.FirstOrDefault(d => d.FullName.StartsWith(device.Text));
+            if (match is null || device is not ToolStripMenuItem menuItem ) return;
+            menuItem.Checked = match.IsDefaultDevice;
+        });
     }
 }
