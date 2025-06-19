@@ -42,6 +42,7 @@ public class TrayAppContext : ApplicationContext
             _deviceButtons.Add(GetDeviceButton(device));
         }
 
+        _ = CheckDeviceMenuItems();
         
         _trayIcon.ContextMenuStrip.Items.AddRange(_deviceButtons.ToArray());
         _trayIcon.ContextMenuStrip.Items.Add(new ToolStripSeparator());
@@ -118,10 +119,24 @@ public class TrayAppContext : ApplicationContext
     private async Task SwitchTo(string name)
     {
         var devices = await _audioController.GetPlaybackDevicesAsync(DeviceState.Active);
-        var device = devices.FirstOrDefault(d => d.FullName.StartsWith(name));
+        var device = devices?.FirstOrDefault(d => d.FullName.StartsWith(name));
         if (device == null) return;
 
-        await device.SetAsDefaultAsync();
+        var success = await device.SetAsDefaultAsync();
+        if (!success) return;
+
+        await CheckDeviceMenuItems();
         await new ToastForm($"Switched to {device.FullName}").ShowToast();
+    }
+
+    private async Task CheckDeviceMenuItems()
+    {
+        var devices = await _audioController.GetPlaybackDevicesAsync(DeviceState.Active);
+        _deviceButtons.ForEach(device =>
+        {
+            var match = devices.FirstOrDefault(d => d.FullName.StartsWith(device.Text));
+            if (match is null || device is not ToolStripMenuItem menuItem ) return;
+            menuItem.Checked = match.IsDefaultDevice;
+        });
     }
 }
