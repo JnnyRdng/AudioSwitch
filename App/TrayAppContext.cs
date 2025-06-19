@@ -86,7 +86,9 @@ public class TrayAppContext : ApplicationContext
 
         void UpdateCheckedState()
         {
-          
+            darkOption.Checked = SettingsService.Settings.DarkMode == (Theme)darkOption.Tag;
+            lightOption.Checked = SettingsService.Settings.DarkMode == (Theme)lightOption.Tag;
+            systemOption.Checked = SettingsService.Settings.DarkMode == (Theme)systemOption.Tag;
         }
 
         void ContextMenuStripOpening(object? sender, EventArgs e)
@@ -97,7 +99,7 @@ public class TrayAppContext : ApplicationContext
         void SettingItemClick(object? sender, EventArgs e)
         {
             if (sender is not ToolStripMenuItem { Tag: Theme theme }) return;
-           
+            SettingsService.Settings.DarkMode = theme;
             UpdateCheckedState();
         }
     }
