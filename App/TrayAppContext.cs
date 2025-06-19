@@ -12,6 +12,7 @@ public class TrayAppContext : ApplicationContext
 {
     private readonly NotifyIcon _trayIcon;
     private readonly CoreAudioController _audioController = new();
+    private readonly List<ToolStripItem> _deviceButtons = new();
 
     public TrayAppContext()
     {
@@ -35,52 +36,29 @@ public class TrayAppContext : ApplicationContext
 
         foreach (var device in SettingsService.Settings.DeviceHotKeys)
         {
-            _trayIcon.ContextMenuStrip.Items.Add(CreateDescriptivePanelFromDevice(device));
-            _trayIcon.ContextMenuStrip.Items.Add(new ToolStripSeparator());
+            // device.ChangeShortcut(dummyForm.Handle,
+            //     Keys.Control | Keys.Shift | Keys.Alt | (device.DeviceName.StartsWith("Speak")
+            //         ? Keys.OemCloseBrackets
+            //         : Keys.OemOpenBrackets));
+            
+            _deviceButtons.Add(GetDeviceButton(device));
         }
 
+        
+        _trayIcon.ContextMenuStrip.Items.AddRange(_deviceButtons.ToArray());
+        _trayIcon.ContextMenuStrip.Items.Add(new ToolStripSeparator());
         _trayIcon.ContextMenuStrip.Items.Add(GetDarkModeToggle());
         _trayIcon.ContextMenuStrip.Items.Add(GetExitButton(dummyForm.Handle));
         _trayIcon.ContextMenuStrip.Items.Add(new ToolStripSeparator());
         _trayIcon.ContextMenuStrip.Items.Add(GetVersionItem());
     }
 
-    private static ToolStripItem CreateDescriptivePanelFromDevice(DeviceHotKey device)
+    private ToolStripMenuItem GetDeviceButton(DeviceHotKey device)
     {
-        var panel = new Panel
+        return new DeviceMenuItem(device, (s, e) =>
         {
-            BackColor = Color.Transparent,
-            Padding = new Padding(4),
-            AutoSize = true,
-        };
-
-        var titleLabel = new Label
-        {
-            Text = device.DeviceName,
-            AutoSize = true,
-        };
-        var modString = ((ModifierKeys)device.Modifiers).ToModifierString();
-        var moddedString = modString.Length == 0 ? string.Empty : $"{modString}+";
-        var key = device.Key.ToSymbol();
-        var descLabel = new Label
-        {
-            Text = $"{moddedString}{key}",
-            Font = new Font("Segoe UI", 8),
-            ForeColor = SystemColors.GrayText,
-            AutoSize = true
-        };
-
-        panel.Controls.Add(titleLabel);
-        panel.Controls.Add(descLabel);
-        descLabel.Top = titleLabel.Bottom + 2;
-
-        return new ToolStripControlHost(panel)
-        {
-            Margin = Padding.Empty,
-            Padding = Padding.Empty,
-            AutoSize = true,
-            Size = panel.PreferredSize,
-        };
+            _ = SwitchTo(device.DeviceName);
+        });
     }
 
     private static ToolStripMenuItem GetDarkModeToggle()
