@@ -17,7 +17,7 @@ public static class HotKeys
 
     #endregion
 
-    public static void RegisterMultipleHotKeys(IntPtr hWnd, List<DeviceHotKey> hotkeys)
+    public static void RegisterHotKeys(IntPtr hWnd, List<DeviceHotKey> hotkeys)
     {
         foreach (var hotkey in hotkeys)
         {
@@ -32,7 +32,7 @@ public static class HotKeys
         return RegisterHotKey(hWnd, hotkey.Id, hotkey.GetModifiers(), hotkey.GetKey());
     }
 
-    public static void UnregisterMultipleHotKeys(IntPtr hWnd, List<DeviceHotKey> hotkeys)
+    public static void UnregisterHotKeys(IntPtr hWnd, List<DeviceHotKey> hotkeys)
     {
         foreach (var hotkey in hotkeys)
         {

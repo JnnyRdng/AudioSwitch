@@ -17,8 +17,7 @@ public class TrayAppContext : ApplicationContext
     public TrayAppContext()
     {
         var dummyForm = new HiddenForm();
-        HotKeys.RegisterMultipleHotKeys(dummyForm.Handle, SettingsService.Settings.DeviceHotKeys);
-
+        HotKeys.RegisterHotKeys(dummyForm.Handle, SettingsService.Settings.DeviceHotKeys);
         dummyForm.HotKeyPressed += OnHotKeyPressed;
 
         _trayIcon = new NotifyIcon
@@ -79,7 +78,7 @@ public class TrayAppContext : ApplicationContext
     {
         return new ToolStripMenuItem("Exit", null, (s, e) =>
         {
-            HotKeys.UnregisterMultipleHotKeys(handle, SettingsService.Settings.DeviceHotKeys);
+            HotKeys.UnregisterHotKeys(handle, SettingsService.Settings.DeviceHotKeys);
             _trayIcon.Visible = false;
             _trayIcon.Dispose();
             Application.Exit();
