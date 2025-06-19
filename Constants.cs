@@ -2,5 +2,6 @@
 
 public static class Constants
 {
-    public static readonly string AppName = "com.jonnyreading.audioswitch";
+    public const string AppIdentifier = "com.jonnyreading.audioswitch";
+    public const string AppName = "AudioSwitch";
 }

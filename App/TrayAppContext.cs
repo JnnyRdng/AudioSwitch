@@ -1,5 +1,4 @@
-﻿using AudioSwitch.Enum;
-using AudioSwitch.Extensions;
+﻿using AudioSwitch.Components;
 using AudioSwitch.Forms;
 using AudioSwitch.Services;
 using AudioSwitch.Utils;
@@ -24,7 +23,7 @@ public class TrayAppContext : ApplicationContext
         {
             Icon = new Icon("Resources/audioswitch.ico"),
             Visible = true,
-            Text = $"AudioSwitch",
+            Text = Constants.AppName,
             ContextMenuStrip = new ContextMenuStrip
             {
                 BackColor = Color.White,
