@@ -5,7 +5,7 @@ namespace AudioSwitch.Components;
 
 public class DeviceMenuItem : ToolStripMenuItem
 {
-
+    
     public DeviceMenuItem(DeviceHotKey device, EventHandler onClick) : base(device.DeviceName, null, onClick)
     {
         ShowShortcutKeys = true;

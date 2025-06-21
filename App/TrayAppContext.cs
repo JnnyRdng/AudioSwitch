@@ -14,11 +14,13 @@ public class TrayAppContext : ApplicationContext
     private readonly CoreAudioController _audioController = new();
     private readonly List<ToolStripItem> _deviceButtons = new();
 
+    private readonly HiddenForm _hiddenForm = new();
+    private IntPtr Handle => _hiddenForm.Handle;
+
     public TrayAppContext()
     {
-        var dummyForm = new HiddenForm();
-        HotKeys.RegisterHotKeys(dummyForm.Handle, SettingsService.Settings.DeviceHotKeys);
-        dummyForm.HotKeyPressed += OnHotKeyPressed;
+        HotKeys.RegisterHotKeys(Handle, SettingsService.Settings.DeviceHotKeys);
+        _hiddenForm.HotKeyPressed += OnHotKeyPressed;
 
         _trayIcon = new NotifyIcon
         {
@@ -39,26 +41,23 @@ public class TrayAppContext : ApplicationContext
             //     Keys.Control | Keys.Shift | Keys.Alt | (device.DeviceName.StartsWith("Speak")
             //         ? Keys.OemCloseBrackets
             //         : Keys.OemOpenBrackets));
-            
+
             _deviceButtons.Add(GetDeviceButton(device));
         }
 
         _ = CheckDeviceMenuItems();
-        
+
         _trayIcon.ContextMenuStrip.Items.AddRange(_deviceButtons.ToArray());
         _trayIcon.ContextMenuStrip.Items.Add(new ToolStripSeparator());
         _trayIcon.ContextMenuStrip.Items.Add(GetThemeDropdown());
-        _trayIcon.ContextMenuStrip.Items.Add(GetExitButton(dummyForm.Handle));
+        _trayIcon.ContextMenuStrip.Items.Add(GetExitButton());
         _trayIcon.ContextMenuStrip.Items.Add(new ToolStripSeparator());
         _trayIcon.ContextMenuStrip.Items.Add(GetVersionItem());
     }
 
     private ToolStripMenuItem GetDeviceButton(DeviceHotKey device)
     {
-        return new DeviceMenuItem(device, (s, e) =>
-        {
-            _ = SwitchTo(device.DeviceName);
-        });
+        return new DeviceMenuItem(device, (s, e) => { _ = SwitchTo(device.DeviceName); });
     }
 
     private ToolStripMenuItem GetThemeDropdown()
@@ -68,11 +67,11 @@ public class TrayAppContext : ApplicationContext
         var darkOption = new ToolStripMenuItem("Dark") { Tag = Theme.Dark };
         var lightOption = new ToolStripMenuItem("Light") { Tag = Theme.Light };
         var systemOption = new ToolStripMenuItem("System") { Tag = Theme.System };
-        
+
         darkOption.Click += SettingItemClick;
         lightOption.Click += SettingItemClick;
         systemOption.Click += SettingItemClick;
-        
+
         menu.DropDownItems.Add(darkOption);
         menu.DropDownItems.Add(lightOption);
         menu.DropDownItems.Add(systemOption);
@@ -104,11 +103,11 @@ public class TrayAppContext : ApplicationContext
         }
     }
 
-    private ToolStripMenuItem GetExitButton(IntPtr handle)
+    private ToolStripMenuItem GetExitButton()
     {
         return new ToolStripMenuItem("Exit", null, (s, e) =>
         {
-            HotKeys.UnregisterHotKeys(handle, SettingsService.Settings.DeviceHotKeys);
+            HotKeys.UnregisterHotKeys(Handle, SettingsService.Settings.DeviceHotKeys);
             _trayIcon.Visible = false;
             _trayIcon.Dispose();
             Application.Exit();
@@ -165,7 +164,7 @@ public class TrayAppContext : ApplicationContext
         _deviceButtons.ForEach(device =>
         {
             var match = devices.FirstOrDefault(d => d.FullName.StartsWith(device.Text));
-            if (match is null || device is not ToolStripMenuItem menuItem ) return;
+            if (match is null || device is not ToolStripMenuItem menuItem) return;
             menuItem.Checked = match.IsDefaultDevice;
         });
     }
