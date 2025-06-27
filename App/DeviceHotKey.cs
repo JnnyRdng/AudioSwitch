@@ -41,12 +41,12 @@ public class DeviceHotKey
         try
         {
             var previousShortcut = Shortcut;
-            HotKeys.UnregisterHotKey(handle, this);
+            Native.UnregisterHotKey(handle, this);
             Shortcut = newShortcut;
-            var success = HotKeys.RegisterHotKey(handle, this);
+            var success = Native.RegisterHotKey(handle, this);
             if (success) return Return.Success;
             Shortcut = previousShortcut;
-            var revertSuccess = HotKeys.RegisterHotKey(handle, this);
+            var revertSuccess = Native.RegisterHotKey(handle, this);
             if (!revertSuccess)
             {
                 Shortcut = 0u;

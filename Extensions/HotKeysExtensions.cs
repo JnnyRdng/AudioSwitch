@@ -1,43 +1,15 @@
-﻿using System.Runtime.InteropServices;
-using System.Text;
-using AudioSwitch.Enum;
+﻿using AudioSwitch.Enum;
+using AudioSwitch.Utils;
 
 namespace AudioSwitch.Extensions;
 
 public static class HotKeysExtensions
 {
-    #region External
-
-    private const string Dll = "user32.dll";
-
-    [DllImport(Dll)]
-    private static extern int ToUnicode(
-        uint wVirtKey,
-        uint wScanCode,
-        byte[] lpKeyState,
-        [Out, MarshalAs(UnmanagedType.LPWStr, SizeParamIndex = 4)]
-        StringBuilder pwszBuff,
-        int cchBuff,
-        uint wFlags);
-
-    [DllImport(Dll)]
-    private static extern bool GetKeyboardState(byte[] lpKeyState);
-
-    [DllImport(Dll)]
-    private static extern uint MapVirtualKey(uint uCode, uint uMapType);
-
-    #endregion
-
     private static string KeysToKeySymbol(Keys key)
     {
-        var keyCode = (uint)key;
-        var keyboardState = new byte[256];
-        if (!GetKeyboardState(keyboardState)) return string.Empty;
-
-        var sb = new StringBuilder(2);
-        var scanCode = MapVirtualKey(keyCode, 0);
-        var uni = ToUnicode(keyCode, scanCode, keyboardState, sb, sb.Capacity, 0);
-        return uni > 0 ? sb.ToString() : string.Empty;
+        if (!Native.GetKeyboardState(out var keyboardState)) return string.Empty;
+        var unicode = Native.ToUnicode(key, keyboardState, out var sb);
+        return unicode > 0 ? sb.ToString() : string.Empty;
     }
 
     public static ModifierKeys GetModifiers(this Keys keys)

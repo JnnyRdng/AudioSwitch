@@ -11,6 +11,7 @@ public partial class HiddenForm : Form
         {
             var id = m.WParam.ToInt32();
             HotKeyPressed?.Invoke(id);
+            return;
         }
         base.WndProc(ref m);
     }
