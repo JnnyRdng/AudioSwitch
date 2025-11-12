@@ -1,4 +1,5 @@
-﻿using AudioSwitch.Components;
+﻿using System.Media;
+using AudioSwitch.Components;
 using AudioSwitch.Enum;
 using AudioSwitch.Forms;
 using AudioSwitch.Services;
@@ -49,6 +50,8 @@ public class TrayAppContext : ApplicationContext
 
         _trayIcon.ContextMenuStrip.Items.AddRange(_deviceButtons.ToArray());
         _trayIcon.ContextMenuStrip.Items.Add(new ToolStripSeparator());
+        _trayIcon.ContextMenuStrip.Items.Add(GetToggleSoundButton());
+        _trayIcon.ContextMenuStrip.Items.Add(new ToolStripSeparator());
         _trayIcon.ContextMenuStrip.Items.Add(GetThemeDropdown());
         _trayIcon.ContextMenuStrip.Items.Add(GetExitButton());
         _trayIcon.ContextMenuStrip.Items.Add(new ToolStripSeparator());
@@ -58,6 +61,26 @@ public class TrayAppContext : ApplicationContext
     private ToolStripMenuItem GetDeviceButton(DeviceHotKey device)
     {
         return new DeviceMenuItem(device, (s, e) => { _ = SwitchTo(device.DeviceName); });
+    }
+
+    private ToolStripMenuItem GetToggleSoundButton()
+    {
+        var menu = new ToolStripMenuItem("Play sound on switch");
+        menu.Click += (sender, e) =>
+        {
+            if (sender is not ToolStripMenuItem) return;
+            SettingsService.Settings.PlaySound = !SettingsService.Settings.PlaySound;
+            UpdateCheckedState();
+        };
+        if (_trayIcon.ContextMenuStrip != null)
+            _trayIcon.ContextMenuStrip.Opening += (s, e) => UpdateCheckedState();
+
+        return menu;
+
+        void UpdateCheckedState()
+        {
+            menu.Checked = SettingsService.Settings.PlaySound;
+        }
     }
 
     private ToolStripMenuItem GetThemeDropdown()
@@ -116,7 +139,6 @@ public class TrayAppContext : ApplicationContext
 
     private static ToolStripItem GetVersionItem()
     {
-        SettingsService.GetVersion();
         var panel = new Panel
         {
             BackColor = Color.Transparent,
@@ -154,6 +176,7 @@ public class TrayAppContext : ApplicationContext
         var success = await device.SetAsDefaultAsync();
         if (!success) return;
 
+        PlayNotificationSound();
         await CheckDeviceMenuItems();
         await new ToastForm($"Switched to {device.FullName}").ShowToast();
     }
@@ -167,5 +190,12 @@ public class TrayAppContext : ApplicationContext
             if (match is null || device is not ToolStripMenuItem menuItem) return;
             menuItem.Checked = match.IsDefaultDevice;
         });
+    }
+
+    private static void PlayNotificationSound()
+    {
+        if (!SettingsService.Settings.PlaySound) return;
+        var player = new SoundPlayer("Resources/ui-pop.wav");
+        player.Play();
     }
 }
