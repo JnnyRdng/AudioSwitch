@@ -13,7 +13,7 @@ public class AppSettings
     private float _toastOpacity = 0.8f;
     private int _toastDuration = 1_000;
     private bool _disableFade = false;
-    private bool _playSound = true;
+    private bool _playSound = false;
 
     public Theme AppTheme
     {
