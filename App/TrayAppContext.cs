@@ -46,7 +46,7 @@ public class TrayAppContext : ApplicationContext
             _deviceButtons.Add(GetDeviceButton(device));
         }
 
-        _ = CheckDeviceMenuItems();
+        _trayIcon.ContextMenuStrip.Opening += (s, e) => CheckDeviceMenuItems();
 
         _trayIcon.ContextMenuStrip.Items.AddRange(_deviceButtons.ToArray());
         _trayIcon.ContextMenuStrip.Items.Add(new ToolStripSeparator());
@@ -177,7 +177,6 @@ public class TrayAppContext : ApplicationContext
         if (!success) return;
 
         PlayNotificationSound();
-        await CheckDeviceMenuItems();
         await new ToastForm($"Switched to {device.FullName}").ShowToast();
     }
 
