@@ -1,4 +1,5 @@
-﻿using AudioSwitch.Components;
+﻿using System.Media;
+using AudioSwitch.Components;
 using AudioSwitch.Enum;
 using AudioSwitch.Forms;
 using AudioSwitch.Services;
@@ -175,6 +176,7 @@ public class TrayAppContext : ApplicationContext
         var success = await device.SetAsDefaultAsync();
         if (!success) return;
 
+        PlayNotificationSound();
         await CheckDeviceMenuItems();
         await new ToastForm($"Switched to {device.FullName}").ShowToast();
     }
@@ -188,5 +190,12 @@ public class TrayAppContext : ApplicationContext
             if (match is null || device is not ToolStripMenuItem menuItem) return;
             menuItem.Checked = match.IsDefaultDevice;
         });
+    }
+
+    private static void PlayNotificationSound()
+    {
+        if (!SettingsService.Settings.PlaySound) return;
+        var player = new SoundPlayer("Resources/ui-pop.wav");
+        player.Play();
     }
 }
