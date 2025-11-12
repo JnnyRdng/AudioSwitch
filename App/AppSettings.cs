@@ -13,6 +13,7 @@ public class AppSettings
     private float _toastOpacity = 0.8f;
     private int _toastDuration = 1_000;
     private bool _disableFade = false;
+    private bool _playSound = true;
 
     public Theme AppTheme
     {
@@ -42,6 +43,12 @@ public class AppSettings
     {
         get => _disableFade;
         set => Set(ref _disableFade, value);
+    }
+
+    public bool PlaySound
+    {
+        get => _playSound;
+        set => Set(ref _playSound, value);
     }
 
     #endregion
